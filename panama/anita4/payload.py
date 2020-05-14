@@ -2,10 +2,12 @@ from typing import List
 
 from cached_property import cached_property
 
+from panama.anita import ANITA
+
 __all__ = ["ANITA4"]
 
 
-class ANITA4:
+class ANITA4(ANITA):
     """
     Represent the fourth flight of ANITA.
     """

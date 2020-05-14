@@ -35,3 +35,16 @@ def test_get_responses_anita4() -> None:
             # and try and load the corresponding responses directly
             for response in ["trigger", "digitizer"]:
                 _ = responses.get_response(response, channel, config, anita.flight)
+
+    # and check that I also load the digitizer and
+    # trigger responses directly from the instance
+    trigger = anita.trigger_responses
+
+    # and check that all the channels are present
+    trigger.keys() == anita.channels
+
+    # and repeat for the digitizer response
+    digitizer = anita.digitizer_responses
+
+    # and check that all the channels are present
+    digitizer.keys() == anita.channels

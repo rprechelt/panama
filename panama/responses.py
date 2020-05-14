@@ -1,5 +1,5 @@
 from os.path import dirname, join
-from typing import List, Dict
+from typing import Dict, List
 
 import numpy as np
 from cachetools import cached
