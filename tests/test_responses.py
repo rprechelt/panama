@@ -1,6 +1,7 @@
 import numpy as np
-from panama.anita4 import ANITA4
+
 import panama.responses as responses
+from panama.anita4 import ANITA4
 
 
 def test_get_responses_anita4() -> None:

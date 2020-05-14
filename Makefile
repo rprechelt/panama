@@ -22,6 +22,6 @@ mypy:
 	python -m mypy panama
 
 isort:
-	python -m isort --atomic -rc -y panama
+	python -m isort --atomic -rc -y panama tests
 
 # end
