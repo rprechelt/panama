@@ -1,4 +1,5 @@
 from os.path import dirname, join
+from typing import List, Dict
 
 import numpy as np
 from cachetools import cached
@@ -8,6 +9,25 @@ __all__ = ["get_response", "get_trigger_response", "get_digitizer_response"]
 
 # the directory where we store impulse responses
 RESPONSE_DIR = join(dirname(dirname(__file__)), *("data", "responses"))
+
+
+def get_all_responses(
+    response: str, channels: List[str], configs: List[str], flight: int
+) -> Dict[str, np.ndarray]:
+    """
+    """
+
+    # a dictionary to store our responses
+    responses: Dict[str, Dict[str, np.ndarray]] = {}
+
+    # loop through all the channels and configs
+    for ch in channels:
+        responses[ch] = {}  # create a config dictionary
+        for config in configs:
+            responses[ch][config] = get_response(response, ch, config, flight)
+
+    # and return the responses
+    return responses
 
 
 @cached(cache={})
