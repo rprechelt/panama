@@ -35,7 +35,7 @@ setup(
               "air shower", "askaryan", " geomagnetic"],
     packages=["panama"],
     python_requires=">=3.6*, <4",
-    install_requires=["numpy", "cachetools", "cached_property"],
+    install_requires=["numpy", "cachetools", "xarray", "cached_property"],
     extras_require={
         "test": ["pytest", "black", "mypy",
                  "coverage", "pytest-cov", "flake8"],

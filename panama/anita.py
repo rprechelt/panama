@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import List
 
-import numpy as np
+import xarray as xr
 
 import panama.responses
 
@@ -39,7 +39,7 @@ class ANITA(ABC):
         """
 
     @property
-    def digitizer_responses(self) -> Dict[str, Dict[str, np.ndarray]]:
+    def digitizer_responses(self) -> xr.DataArray:
         """
         Load the digitizer responses for this flight.
 
@@ -60,7 +60,7 @@ class ANITA(ABC):
         )
 
     @property
-    def trigger_responses(self) -> Dict[str, Dict[str, np.ndarray]]:
+    def trigger_responses(self) -> xr.DataArray:
         """
         Load the trigger responses for this flight.
 

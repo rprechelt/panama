@@ -41,10 +41,12 @@ def test_get_responses_anita4() -> None:
     trigger = anita.trigger_responses
 
     # and check that all the channels are present
-    trigger.keys() == anita.channels
+    assert np.all(trigger.channels == anita.channels)
+    assert np.all(trigger.configs == anita.configs)
 
     # and repeat for the digitizer response
     digitizer = anita.digitizer_responses
 
     # and check that all the channels are present
-    digitizer.keys() == anita.channels
+    assert np.all(digitizer.channels == anita.channels)
+    assert np.all(digitizer.configs == anita.configs)

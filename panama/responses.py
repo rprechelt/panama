@@ -1,7 +1,8 @@
 from os.path import dirname, join
-from typing import Dict, List
+from typing import List
 
 import numpy as np
+import xarray as xr
 from cachetools import cached
 
 __all__ = ["get_response", "get_trigger_response", "get_digitizer_response"]
@@ -13,21 +14,49 @@ RESPONSE_DIR = join(dirname(dirname(__file__)), *("data", "responses"))
 
 def get_all_responses(
     response: str, channels: List[str], configs: List[str], flight: int
-) -> Dict[str, np.ndarray]:
+) -> xr.DataArray:
     """
     """
 
-    # a dictionary to store our responses
-    responses: Dict[str, Dict[str, np.ndarray]] = {}
+    # the number of channels that we load
+    nchannels: int = len(channels)
 
-    # loop through all the channels and configs
-    for ch in channels:
-        responses[ch] = {}  # create a config dictionary
-        for config in configs:
-            responses[ch][config] = get_response(response, ch, config, flight)
+    # the number of configs that loading
+    nconfigs: int = len(configs)
+
+    # get an reference response to get the length
+    N: int = get_response(response, channels[0], configs[0], flight)["height"].size
+
+    # allocate the memory for the response waveforms
+    responses: np.ndarray = np.zeros((nchannels, nconfigs, 2, N))
+
+    # loop through all the channels
+    for ich, ch in enumerate(channels):
+
+        # and loop over the configs
+        for iconfig, config in enumerate(configs):
+
+            # get the current response
+            waveform = get_response(response, ch, config, flight)
+
+            # store the response in the array
+            responses[ich, iconfig, 0, :] = waveform["time"]  # type: ignore
+            responses[ich, iconfig, 1, :] = waveform["height"]  # type: ignore
+
+    # and create the data array
+    xray = xr.DataArray(
+        responses,
+        dims=["channels", "configs", "var", "samples"],
+        coords={
+            "channels": channels,
+            "configs": configs,
+            "var": ["time", "height"],
+            "samples": np.arange(N),
+        },
+    )
 
     # and return the responses
-    return responses
+    return xray
 
 
 @cached(cache={})
