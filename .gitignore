@@ -1,3 +1,6 @@
+# ignore test output
+tests/figures/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
