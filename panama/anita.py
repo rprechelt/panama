@@ -79,3 +79,57 @@ class ANITA(ABC):
         return panama.responses.get_all_responses(
             "trigger", self.channels, self.configs, self.flight
         )
+
+    def digitizer_response(self, channel: str, config: str) -> xr.DataArray:
+        """
+        Load the digitizer response for a given
+        channel/config for this flight.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        response:
+            The response for `channel`+`config.
+
+        Raises
+        ------
+        ValueError:
+            If `channel` and `config` are not valid for this flight.`
+        """
+
+        # check that we have a valid config
+        if config not in self.configs or channel not in self.channels:
+            raise ValueError(f"{channel} and {config} not valid for this flight.")
+
+        # if so, return the response
+        return panama.responses.get_digitizer_response(channel, config, self.flight)
+
+    def trigger_response(self, channel: str, config: str) -> xr.DataArray:
+        """
+        Load the trigger response for a given
+        channel/config for this flight.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        response:
+            The response for `channel`+`config.
+
+        Raises
+        ------
+        ValueError:
+            If `channel` and `config` are not valid for this flight.`
+        """
+
+        # check that we have a valid config
+        if config not in self.configs or channel not in self.channels:
+            raise ValueError(f"{channel} and {config} not valid for this flight.")
+
+        # if so, return the response
+        return panama.responses.get_trigger_response(channel, config, self.flight)
