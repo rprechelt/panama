@@ -57,3 +57,10 @@ class ANITA4(ANITA):
         The list of phi sectors.
         """
         return list(range(1, 17))
+
+    @property
+    def rings(self) -> List[str]:
+        """
+        The list of rings used in ANITA4.
+        """
+        return ["T", "M", "B"]

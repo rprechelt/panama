@@ -20,7 +20,8 @@ class ANITA(ABC):
     @property
     @abstractmethod
     def channels(self) -> List[str]:
-        """The list of available channels on this flight.
+        """
+        The list of available channels on this flight.
         """
 
     @property
@@ -33,14 +34,25 @@ class ANITA(ABC):
     @property
     @abstractmethod
     def sectors(self) -> List[int]:
-        """The list of available phi sectors on this flight.
+        """
+        The list of available phi sectors on this flight.
 
         These should be numbered from 0 to N.
         """
 
     @property
+    @abstractmethod
+    def rings(self) -> List[str]:
+        """
+        The list of ringss for this payload.
+
+        This should be one-letter identifiers (T, M, B, etc.)
+        """
+
+    @property
     def pols(self) -> List[str]:
-        """The available polarizations of this payload.
+        """
+        The available polarizations of this payload.
 
         This currently returns ["H", "V"] for all payloads.
         """
