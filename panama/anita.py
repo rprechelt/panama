@@ -39,6 +39,14 @@ class ANITA(ABC):
         """
 
     @property
+    def pols(self) -> List[str]:
+        """The available polarizations of this payload.
+
+        This currently returns ["H", "V"] for all payloads.
+        """
+        return ["H", "V"]
+
+    @property
     def digitizer_responses(self) -> xr.DataArray:
         """
         Load the digitizer responses for this flight.
