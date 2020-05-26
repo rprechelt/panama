@@ -23,15 +23,15 @@ def test_get_responses_anita4() -> None:
             trigger = responses.get_trigger_response(channel, config, anita.flight)
 
             # and perform some basic tests
-            assert np.sum(trigger["time"]) > 1e-6
-            assert np.sum(np.abs(trigger["height"])) > 0.0
+            assert np.sum(trigger.time) > 1e-6
+            assert np.sum(np.abs(trigger)) > 0.0
 
             # load the digitizer responses
             digitizer = responses.get_digitizer_response(channel, config, anita.flight)
 
             # and perform some basic tests
-            assert np.sum(digitizer["time"]) > 1e-6
-            assert np.sum(np.abs(digitizer["height"])) > 0.0
+            assert np.sum(digitizer.time) > 1e-6
+            assert np.sum(np.abs(digitizer)) > 0.0
 
             # and try and load the corresponding responses directly
             for response in ["trigger", "digitizer"]:

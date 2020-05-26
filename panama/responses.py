@@ -25,10 +25,10 @@ def get_all_responses(
     nconfigs: int = len(configs)
 
     # get an reference response to get the length
-    N: int = get_response(response, channels[0], configs[0], flight)["height"].size
+    N: int = get_response(response, channels[0], configs[0], flight).size
 
     # allocate the memory for the response waveforms
-    responses: np.ndarray = np.zeros((nchannels, nconfigs, 2, N))
+    responses: np.ndarray = np.zeros((nchannels, nconfigs, N))
 
     # loop through all the channels
     for ich, ch in enumerate(channels):
@@ -40,19 +40,14 @@ def get_all_responses(
             waveform = get_response(response, ch, config, flight)
 
             # store the response in the array
-            responses[ich, iconfig, 0, :] = waveform["time"]  # type: ignore
-            responses[ich, iconfig, 1, :] = waveform["height"]  # type: ignore
+            time = waveform.time  # type: ignore
+            responses[ich, iconfig, :] = waveform  # type: ignore
 
     # and create the data array
     xray = xr.DataArray(
         responses,
-        dims=["channels", "configs", "var", "samples"],
-        coords={
-            "channels": channels,
-            "configs": configs,
-            "var": ["time", "height"],
-            "samples": np.arange(N),
-        },
+        dims=["channels", "configs", "time"],
+        coords={"channels": channels, "configs": configs, "time": time,},
     )
 
     # and return the responses
@@ -60,7 +55,7 @@ def get_all_responses(
 
 
 @cached(cache={})
-def get_response(response: str, channel: str, config: str, flight: int) -> np.ndarray:
+def get_response(response: str, channel: str, config: str, flight: int) -> xr.DataArray:
     """
     Load arbitrary impulse response from a directory organized according to the
     standard PANAMA response directories.
@@ -94,7 +89,7 @@ def get_response(response: str, channel: str, config: str, flight: int) -> np.nd
 
     Returns
     -------
-    impulse: np.ndarray
+    impulse: xr.DataArray
         The impulse response/effective height in m/s sampled at 10 GSa/s.
     """
     # get the directory for this flight
@@ -107,17 +102,16 @@ def get_response(response: str, channel: str, config: str, flight: int) -> np.nd
         filename = join(load_dir, *(f"notches_{config}", f"{channel}.imp"))
 
     # load the impulse response - these are stored calibrated and ready to use
-    # we load these into a NumPy Structured array and return
-    responses: np.ndarray = np.loadtxt(
-        filename, delimiter=" ", dtype=[("time", float), ("height", float)],
-    )
+    # we load these into a NumPy Structured array
+    raw: np.ndarray = np.loadtxt(filename, delimiter=" ")
 
-    return responses
+    # and convert it into an XArray DataArray
+    return xr.DataArray(raw[:, 1], dims=["time"], coords={"time": raw[:, 0]},)
 
 
 def get_trigger_response(
     channel: str, config: str = "0_0_0", flight: int = 4,
-) -> np.ndarray:
+) -> xr.DataArray:
     """
     Load the trigger impulse response for a given channel,
     TUFF configuration, and ANITA flight.
@@ -133,7 +127,7 @@ def get_trigger_response(
 
     Returns
     -------
-    impulse: np.ndarray
+    impulse: xr.DataArray
         The impulse response/effective height in m/s sampled at 10 GSa/s.
     """
 
@@ -146,7 +140,7 @@ def get_trigger_response(
 
 def get_digitizer_response(
     channel: str, config: str = "0_0_0", flight: int = 4,
-) -> np.ndarray:
+) -> xr.DataArray:
     """
     Load the digitizer impulse response for a given channel,
     TUFF configuration, and ANITA flight.
@@ -167,7 +161,7 @@ def get_digitizer_response(
     """
 
     # get the responses - explicitly annotate the type.
-    responses: np.ndarray = get_response("digitizer", channel, config, flight)
+    responses: xr.DataArray = get_response("digitizer", channel, config, flight)
 
     # and we are
     return responses
