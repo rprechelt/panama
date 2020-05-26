@@ -105,8 +105,17 @@ def get_response(response: str, channel: str, config: str, flight: int) -> xr.Da
     # we load these into a NumPy Structured array
     raw: np.ndarray = np.loadtxt(filename, delimiter=" ")
 
+    # the sample rate that all panama responses are currently stored at in GSa/s
+    fs = 10.
+
+    # we want the first 100 ns of each response
+    duration = 100
+
+    # get the number of samples
+    N = int(round(duration * fs))
+
     # and convert it into an XArray DataArray
-    return xr.DataArray(raw[:, 1], dims=["time"], coords={"time": raw[:, 0]},)
+    return xr.DataArray(raw[0:N, 1], dims=["time"], coords={"time": raw[0:N, 0]},)
 
 
 def get_trigger_response(
