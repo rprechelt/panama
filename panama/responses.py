@@ -1,5 +1,5 @@
 from os.path import dirname, join
-from typing import List
+from typing import Any, List, Optional
 
 import numpy as np
 import xarray as xr
@@ -13,7 +13,7 @@ RESPONSE_DIR = join(dirname(dirname(__file__)), *("data", "responses"))
 
 
 def get_all_responses(
-    response: str, channels: List[str], configs: List[str], flight: int
+    response: str, channels: List[str], configs: List[str], flight: int, **kwargs: Any
 ) -> xr.DataArray:
     """
     """
@@ -25,7 +25,7 @@ def get_all_responses(
     nconfigs: int = len(configs)
 
     # get an reference response to get the length
-    N: int = get_response(response, channels[0], configs[0], flight).size
+    N: int = get_response(response, channels[0], configs[0], flight, **kwargs).size
 
     # allocate the memory for the response waveforms
     responses: np.ndarray = np.zeros((nchannels, nconfigs, N))
@@ -55,7 +55,9 @@ def get_all_responses(
 
 
 @cached(cache={})
-def get_response(response: str, channel: str, config: str, flight: int) -> xr.DataArray:
+def get_response(
+    response: str, channel: str, config: str, flight: int, pol: Optional[str] = None
+) -> xr.DataArray:
     """
     Load arbitrary impulse response from a directory organized according to the
     standard PANAMA response directories.
@@ -86,6 +88,8 @@ def get_response(response: str, channel: str, config: str, flight: int) -> xr.Da
        The TUFF configuration to load the response for.
     flight: int
        The ANITA flight to load the responses for.
+    pol: Optional[str]
+       If channel="average", the polarization to load or None.
 
     Returns
     -------
@@ -97,7 +101,10 @@ def get_response(response: str, channel: str, config: str, flight: int) -> xr.Da
 
     # if the user asks for an average
     if channel == "average":
-        filename = join(load_dir, *("averages", f"notches_{config}.imp"))
+        if pol:  # check if a user provided a polarization
+            filename = join(load_dir, *("averages", f"notches_{config}_{pol}.imp"))
+        else:
+            filename = join(load_dir, *("averages", f"notches_{config}.imp"))
     else:
         filename = join(load_dir, *(f"notches_{config}", f"{channel}.imp"))
 
@@ -106,7 +113,7 @@ def get_response(response: str, channel: str, config: str, flight: int) -> xr.Da
     raw: np.ndarray = np.loadtxt(filename, delimiter=" ")
 
     # the sample rate that all panama responses are currently stored at in GSa/s
-    fs = 10.
+    fs = 10.0
 
     # we want the first 100 ns of each response
     duration = 100
@@ -148,7 +155,7 @@ def get_trigger_response(
 
 
 def get_digitizer_response(
-    channel: str, config: str = "0_0_0", flight: int = 4,
+    channel: str, config: str = "0_0_0", flight: int = 4, **kwargs: Any
 ) -> xr.DataArray:
     """
     Load the digitizer impulse response for a given channel,
@@ -170,7 +177,9 @@ def get_digitizer_response(
     """
 
     # get the responses - explicitly annotate the type.
-    responses: xr.DataArray = get_response("digitizer", channel, config, flight)
+    responses: xr.DataArray = get_response(
+        "digitizer", channel, config, flight, **kwargs
+    )
 
     # and we are
     return responses
