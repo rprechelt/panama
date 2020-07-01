@@ -1,6 +1,7 @@
 __version__ = "0.0.1"
 
 import enum
+from . import responses  # noqa: F401
 
 
 @enum.unique
