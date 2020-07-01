@@ -105,6 +105,9 @@ def get_anita3_response() -> xr.Dataset:
     """
     Load the measured antenna gain for an ANITA-3 horn.
 
+    *WARNING*: Use these with care. These measurements disagree by
+    nearly a factor of 2 with the Seavey datasheet.
+
     This was measured by B. Rotter and B. Strutt in Palestine
     and is discussed in Elog 575.
     https://elog.phys.hawaii.edu/elog/anita_notes/575
