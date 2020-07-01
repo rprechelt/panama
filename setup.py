@@ -15,8 +15,10 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 setup(
     name="panama",
     version=__version__,
-    description=("A fast Python payload simulation for the "
-                 "Antarctic Impulse Transient Antenna (ANITA)"),
+    description=(
+        "A fast Python payload simulation for the "
+        "Antarctic Impulse Transient Antenna (ANITA)"
+    ),
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/rprechelt/panama",
@@ -31,17 +33,28 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],
-    keywords=["anita", "neutrino", "radio", "cosmic ray",
-              "air shower", "askaryan", " geomagnetic"],
+    keywords=[
+        "anita",
+        "neutrino",
+        "radio",
+        "cosmic ray",
+        "air shower",
+        "askaryan",
+        " geomagnetic",
+    ],
     packages=["panama"],
     python_requires=">=3.6*, <4",
-    install_requires=["numpy", "cachetools", "xarray", "cached_property"],
+    install_requires=[
+        "numpy",
+        "cachetools",
+        "xarray",
+        "cached_property",
+        "align @ git+git://github.com/rprechelt/align",
+    ],
     extras_require={
-        "test": ["pytest", "black", "mypy",
-                 "coverage", "pytest-cov", "flake8"],
+        "test": ["pytest", "black", "mypy", "coverage", "pytest-cov", "flake8"],
     },
     scripts=[],
     project_urls={},
     include_package_data=True,
-
 )
