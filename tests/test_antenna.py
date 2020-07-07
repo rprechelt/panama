@@ -9,6 +9,7 @@ import panama.calibration.antenna as calantenna
 
 from . import figdir
 
+
 def test_anita34_beamwidths() -> None:
     """
     Check that we can load and plot the ANITA-3/4 antenna beamwidths.
@@ -24,8 +25,8 @@ def test_anita34_beamwidths() -> None:
         beamwidths = antenna.get_beamwidth(flight)
 
         # check that frequencies are in the right range
-        np.testing.assert_array_less(beamwidths.freqs, 1300.)
-        np.testing.assert_array_less(50., beamwidths.freqs)
+        np.testing.assert_array_less(beamwidths.freqs, 1300.0)
+        np.testing.assert_array_less(50.0, beamwidths.freqs)
 
         # and plot the H and V planes
         ax.plot(beamwidths.freqs, beamwidths.H, label="Horiz.")
@@ -42,7 +43,7 @@ def test_anita34_beamwidths() -> None:
 
 def test_anita1_antenna() -> None:
     """
-    Check that we can load and plot the average AMPA response.
+    Check that we can load and plot the ANITA-1 antenna gain.
     """
 
     # get the average response
@@ -68,3 +69,56 @@ def test_anita1_antenna() -> None:
     ax.set_title("Average ANITA-1 Antenna Gain")
 
     plt.savefig(f"{figdir}/anita1_antenna_gain.png")
+
+
+def test_anita3_antenna() -> None:
+    """
+    Check that we can load and plot the ANITA-3 antenna gain.
+    """
+
+    # get the average response
+    response = calantenna.get_response(flight=3)
+
+    # check that it matches the specific flight call
+    np.testing.assert_allclose(response["H"], calantenna.get_anita3_response()["H"])
+    np.testing.assert_allclose(response["V"], calantenna.get_anita3_response()["V"])
+
+    # create a figure and axis
+    fig, ax = plt.subplots()
+
+    # plot the response
+    ax.plot(response["freqs"], response["H"], label="H-Pol", c="deepskyblue")
+    ax.plot(response["freqs"], response["V"], label="V-Pol", c="crimson")
+
+    # load the datasheet again
+    datasheet = calantenna.get_anita3_datasheet_response()
+
+    # and plot the datasheet response
+    ax.scatter(
+        datasheet["freqs"],
+        datasheet["H"],
+        label="H-Pol DS",
+        marker="x",
+        color="deepskyblue",
+    )
+    ax.scatter(
+        datasheet["freqs"],
+        datasheet["V"],
+        label="V-Pol DS",
+        marker="x",
+        color="crimson",
+    )
+
+    # and some limits
+    ax.set_ylim([0, 15])
+
+    # and add some info
+    ax.set_xlabel("Frequency [MHz]")
+    ax.set_ylabel("Gain [dBi]")
+    ax.set_title("Average ANITA-3 Antenna Gain")
+
+    # and we need a legend
+    plt.legend()
+
+    plt.show()
+    plt.savefig(f"{figdir}/anita3_antenna_gain.png")

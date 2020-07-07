@@ -6,7 +6,12 @@ import os.path as op
 import numpy as np
 import xarray as xr
 
-__all__ = ["get_response", "get_anita1_response"]
+__all__ = [
+    "get_response",
+    "get_anita1_response",
+    "get_anita3_response",
+    "get_anita3_datasheet_response",
+]
 
 
 def get_response(flight: int) -> xr.Dataset:
@@ -143,6 +148,55 @@ def get_anita3_response() -> xr.Dataset:
     # VPol -> VPol
     VV = xr.DataArray(Vgain[:, 1], coords={"freqs": Vgain[:, 0]}, dims="freqs")
     VV.attrs["units"] = "dBi"
+    VV.attrs["long_name"] = r"VPol $\rightarrow$ VPol"
+
+    # and create the dataset
+    response = xr.Dataset({"H": HH, "V": VV})
+
+    # label the independent variables
+    response.freqs.attrs["units"] = "MHz"
+    response.freqs.attrs["long_name"] = "Frequency"
+
+    # and we are done
+    return response
+
+
+def get_anita3_datasheet_response() -> xr.Dataset:
+    """
+    Load the Seavey datasheet antenna gain for an ANITA-3/4 horn
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    response: xr.Dataset
+        A Dataset containing 'freqs' in MHz, 'H' in dBi, and 'V' in dBi.
+
+    """
+
+    # if we are here we have a valid TUFF configuration
+
+    # get the directory where we store the TUFF files
+    data_directory = op.abspath(
+        op.join(
+            __file__, op.pardir, op.pardir, op.pardir, "data", "calibration", "anita3"
+        )
+    )
+
+    # load the file
+    gain = np.loadtxt(op.join(data_directory, "seavey_datasheet_gain.dat"))
+
+    # HPol -> HPol
+    HH = xr.DataArray(gain[:, 1], coords={"freqs": gain[:, 0]}, dims="freqs")
+    HH.attrs["units"] = "dBi"
+    HH.attrs["name"] = r"H"
+    HH.attrs["long_name"] = r"HPol $\rightarrow$ HPol"
+
+    # VPol -> VPol
+    VV = xr.DataArray(gain[:, 2], coords={"freqs": gain[:, 0]}, dims="freqs")
+    VV.attrs["units"] = "dBi"
+    HH.attrs["name"] = r"V"
     VV.attrs["long_name"] = r"VPol $\rightarrow$ VPol"
 
     # and create the dataset
